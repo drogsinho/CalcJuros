@@ -1,6 +1,7 @@
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
+    initializeDarkMode();
 });
 
 function initializeApp() {
@@ -16,6 +17,42 @@ function initializeApp() {
     // Initialize form states
     toggleParcelamento();
     toggleTipoCalculo();
+}
+
+function initializeDarkMode() {
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const sunIcon = document.getElementById('sunIcon');
+    const moonIcon = document.getElementById('moonIcon');
+    
+    // Check for saved dark mode preference or default to light mode
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.documentElement.classList.add('dark');
+        sunIcon.classList.add('hidden');
+        moonIcon.classList.remove('hidden');
+    }
+    
+    darkModeToggle.addEventListener('click', toggleDarkMode);
+}
+
+function toggleDarkMode() {
+    const html = document.documentElement;
+    const sunIcon = document.getElementById('sunIcon');
+    const moonIcon = document.getElementById('moonIcon');
+    
+    html.classList.toggle('dark');
+    
+    if (html.classList.contains('dark')) {
+        localStorage.setItem('theme', 'dark');
+        sunIcon.classList.add('hidden');
+        moonIcon.classList.remove('hidden');
+    } else {
+        localStorage.setItem('theme', 'light');
+        sunIcon.classList.remove('hidden');
+        moonIcon.classList.add('hidden');
+    }
 }
 
 function formatDateToBR(date) {
@@ -133,17 +170,17 @@ function updateNFsTable(nfs) {
     
     nfs.forEach(nf => {
         const row = document.createElement('tr');
-        row.className = 'hover:bg-gray-50 slide-in';
+        row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 slide-in';
         row.innerHTML = `
-            <td class="px-3 py-2 text-sm text-gray-900">${nf.num_nf}</td>
-            <td class="px-3 py-2 text-sm text-gray-900">${formatCurrency(nf.valor_original)}</td>
-            <td class="px-3 py-2 text-sm text-gray-900">${nf.venc_str}</td>
-            <td class="px-3 py-2 text-sm text-gray-900">${nf.dias_atraso || 0}</td>
-            <td class="px-3 py-2 text-sm text-gray-900">${formatCurrency(nf.juros_mora || 0)}</td>
-            <td class="px-3 py-2 text-sm text-gray-900">${formatCurrency(nf.multa || 0)}</td>
-            <td class="px-3 py-2 text-sm font-medium text-gray-900">${formatCurrency(nf.valor_atualizado || nf.valor_original)}</td>
+            <td class="px-3 py-2 text-sm text-gray-900 dark:text-gray-100">${nf.num_nf}</td>
+            <td class="px-3 py-2 text-sm text-gray-900 dark:text-gray-100">${formatCurrency(nf.valor_original)}</td>
+            <td class="px-3 py-2 text-sm text-gray-900 dark:text-gray-100">${nf.venc_str}</td>
+            <td class="px-3 py-2 text-sm text-gray-900 dark:text-gray-100">${nf.dias_atraso || 0}</td>
+            <td class="px-3 py-2 text-sm text-gray-900 dark:text-gray-100">${formatCurrency(nf.juros_mora || 0)}</td>
+            <td class="px-3 py-2 text-sm text-gray-900 dark:text-gray-100">${formatCurrency(nf.multa || 0)}</td>
+            <td class="px-3 py-2 text-sm font-medium text-gray-900 dark:text-gray-100">${formatCurrency(nf.valor_atualizado || nf.valor_original)}</td>
             <td class="px-3 py-2 text-sm">
-                <button onclick="removerNF('${nf.num_nf}')" class="text-red-600 hover:text-red-800 transition-colors">
+                <button onclick="removerNF('${nf.num_nf}')" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors">
                     Remover
                 </button>
             </td>
@@ -239,7 +276,7 @@ function updateResultados(result) {
         
         result.parcelas_info.forEach(parcela => {
             const div = document.createElement('div');
-            div.className = 'flex justify-between text-gray-600';
+            div.className = 'flex justify-between text-gray-600 dark:text-gray-400';
             div.innerHTML = `
                 <span>${parcela.numero}ª: ${parcela.data}</span>
                 <span>${formatCurrency(parcela.valor)}</span>
