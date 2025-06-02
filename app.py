@@ -13,7 +13,6 @@ class CalculadoraAPI:
         self.current_negotiation_details = {}
         locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')  # Definir localidade para português do Brasil
 
-
     def get_float(self, value, default_value=0.0):
         try:
             return float(str(value).replace(",", "."))
@@ -33,7 +32,7 @@ class CalculadoraAPI:
             return None
 
     def date_to_str(self, date_obj):
-        """Convert date object to string for JSON serialization"""
+        """Converter objeto de data em string para serialização JSON"""
         if isinstance(date_obj, date):
             return date_obj.strftime("%d/%m/%y")
         return str(date_obj)
