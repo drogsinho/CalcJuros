@@ -11,7 +11,7 @@ class CalculadoraAPI:
         self.MAX_PARCELAS_ITER = 120
         self.MAX_ITERATION_LOOPS = 10
         self.current_negotiation_details = {}
-        locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')  # Set locale for Brazilian Portuguese
+        locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')  # Definir localidade para português do Brasil
 
     def get_float(self, value, default_value=0.0):
         try:
