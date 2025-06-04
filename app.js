@@ -1,20 +1,20 @@
-// Initialize the application
+// inicializar o aplicativo
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
     initializeDarkMode();
 });
 
 function initializeApp() {
-    // Set default dates
+    // definir datas padrão
     const today = new Date();
     const defaultDate = formatDateToBR(today);
     const futureDate = formatDateToBR(new Date(today.getTime() + (15 * 24 * 60 * 60 * 1000)));
     
     document.getElementById('vencimentoNF').value = defaultDate;
     document.getElementById('dataBaseEncargos').value = defaultDate;
-    document.getElementById('dataPrimeiroPagamento').value = futureDate;
+    document.getElementById('dataPrimeiroPagamento').value = defaultDate;
     
-    // Initialize form states
+    // inicializar estados do formulário
     toggleParcelamento();
     toggleTipoCalculo();
 }
@@ -24,7 +24,7 @@ function initializeDarkMode() {
     const sunIcon = document.getElementById('sunIcon');
     const moonIcon = document.getElementById('moonIcon');
     
-    // Check for saved dark mode preference or default to light mode
+    // verificar preferência de tema salvo ou padrão para tema claro
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
@@ -81,7 +81,7 @@ function showLoading(show = true) {
 }
 
 function showNotification(message, type = 'info') {
-    // Create a simple notification system
+    // criar um sistema de notificacao simples
     const notification = document.createElement('div');
     notification.className = `fixed top-4 right-4 p-4 rounded-md shadow-lg z-50 max-w-sm transition-all transform translate-x-full`;
     
@@ -91,12 +91,12 @@ function showNotification(message, type = 'info') {
     
     document.body.appendChild(notification);
     
-    // Animate in
+    // animação in	
     setTimeout(() => {
         notification.classList.remove('translate-x-full');
     }, 100);
     
-    // Remove after 3 seconds
+    // remove dps de 3 segundos
     setTimeout(() => {
         notification.classList.add('translate-x-full');
         setTimeout(() => {
@@ -120,7 +120,7 @@ async function adicionarNF() {
     try {
         showLoading();
         
-        // Check if pywebview API is available
+        // verificar se a API do pywebview está disponível
         if (typeof pywebview === 'undefined' || !pywebview.api) {
             throw new Error('API não disponível');
         }
@@ -160,6 +160,35 @@ async function removerNF(numNF) {
         console.error('Erro ao remover NF:', error);
         showNotification('Erro ao remover NF', 'error');
     } finally {
+        showLoading(false);
+    }
+}
+
+async function removerTodasNFs() {
+    const nfsTableBody = document.getElementById('nfsTableBody');
+
+    // verificar se há alguma NF atualmente na tabela
+    if (nfsTableBody.children.length === 0) {
+        showNotification('Nenhuma NF para remover.', 'info');
+        return; // sair se não houver NFs para remover
+    }
+
+    try {
+        showLoading();
+        const result = await pywebview.api.remover_todas_nfs();
+
+        if (result.success) {
+            updateNFsTable(result.nfs); // nfs deve ser uma lista vazia
+            showNotification('Todas as NFs foram removidas com sucesso!', 'success');
+        } else {
+            showNotification('Erro ao remover todas as NFs', 'error');
+        }
+    } catch (error) {
+        console.error('Erro ao remover todas as NFs:', error);
+        showNotification('Erro ao remover todas as NFs', 'error');
+    } finally {
+        // este bloco 'finally' só será alcançado se a função não tiver retornado antes
+        // (ou seja, se houver NFs para tentar remover e showLoading() tiver sido chamado).
         showLoading(false);
     }
 }
@@ -248,16 +277,16 @@ async function calcularNegociacao() {
 }
 
 function updateResultados(result) {
-    // Update basic results
+    // atualizar resultados basicos
     document.getElementById('totalPrincipal').textContent = formatCurrency(result.total_principal);
     document.getElementById('totalJuros').textContent = formatCurrency(result.total_juros);
     document.getElementById('totalMultas').textContent = formatCurrency(result.total_multas);
     document.getElementById('saldoBase').textContent = formatCurrency(result.saldo_base);
     
-    // Update NFs table with calculated values
+    // atualizar tabela NFs com valores calculados
     updateNFsTable(result.nfs_calculadas);
     
-    // Handle parcelamento results
+    // lidar com resultados de parcelamento
     const resultadosParcelamento = document.getElementById('resultadosParcelamento');
     const parcelasDetalhes = document.getElementById('parcelasDetalhes');
     
@@ -270,7 +299,7 @@ function updateResultados(result) {
         document.getElementById('valorParcelaResult').textContent = formatCurrency(result.valor_cada_parcela || 0);
         document.getElementById('totalParcelado').textContent = formatCurrency(result.valor_total_parcelado || 0);
         
-        // Update parcelas details
+        // atualizar detalhes das parcelas
         const parcelasLista = document.getElementById('parcelasLista');
         parcelasLista.innerHTML = '';
         
@@ -321,7 +350,7 @@ function fecharModal() {
     document.getElementById('textModal').classList.add('hidden');
 }
 
-// Keyboard shortcuts
+// atalhos de teclado
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && e.target.closest('#numNF, #valorNF, #vencimentoNF')) {
         adicionarNF();

@@ -57,6 +57,10 @@ class CalculadoraAPI:
         self.lista_nfs_data = [
             nf for nf in self.lista_nfs_data if str(nf["num_nf"]) != str(num_nf)]
         return {"success": True, "nfs": self.get_nfs_calculadas()}
+    
+    def remover_todas_nfs(self):
+        self.lista_nfs_data = []
+        return {"success": True, "nfs": self.get_nfs_calculadas()}
 
     def get_nfs_calculadas(self):
         return [self.calcular_nf_encargos(nf) for nf in self.lista_nfs_data]
