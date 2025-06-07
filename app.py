@@ -85,7 +85,7 @@ class CalculadoraAPI:
 
         valor_atualizado = nf_data["valor_original"] + juros_mora + multa
 
-        # Return JSON serializable data
+        # Retorna dados serializáveis em JSON
         return {
             "num_nf": nf_data["num_nf"],
             "valor_original": nf_data["valor_original"],
@@ -106,7 +106,7 @@ class CalculadoraAPI:
         aplica_multa = params.get("aplicar_multa", False)
         desconto_juros_perc = self.get_float(params.get("desconto_juros", "0"))
 
-        # Calcular totais
+        # Calcula totais
         nfs_calculadas = [self.calcular_nf_encargos(
             nf, data_base, taxa_dia, aplica_multa) for nf in self.lista_nfs_data]
 
@@ -128,7 +128,7 @@ class CalculadoraAPI:
             "parcelas_info": []
         }
 
-        # Calcular parcelamento se necessário
+        # Calcula parcelamento se necessário
         if params.get("forma_pagamento") == "parcelado":
             resultado.update(self._calcular_parcelamento(params, saldo_base))
 
@@ -259,7 +259,7 @@ class CalculadoraAPI:
         texto_final.append("")
         """
 
-        # Check if multa is applied based on the NFs data
+        # Verifica se a multa é aplicada com base nos dados das NFs
         aplica_multa = any(nf.get('multa', 0) >
                            0 for nf in details.get("nfs_calculadas", []))
 
@@ -340,7 +340,6 @@ def create_app():
     window = webview.create_window(
         title="Calculadora de Negociação de Dívidas",
         url="index.html",
-
         js_api=api,
         width=1200,
         height=900,
@@ -348,7 +347,7 @@ def create_app():
         resizable=True
     )
 
-    webview.start(debug=True)
+    webview.start(debug=False)
 
 
 if __name__ == "__main__":
