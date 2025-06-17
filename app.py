@@ -3,6 +3,8 @@ import json
 from datetime import datetime, date, timedelta
 import math
 import locale
+import os
+import uuid
 
 
 class CalculadoraAPI:
@@ -11,7 +13,106 @@ class CalculadoraAPI:
         self.MAX_PARCELAS_ITER = 120
         self.MAX_ITERATION_LOOPS = 10
         self.current_negotiation_details = {}
+        self.negociacoes_file = "negociacoes.json"
         locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')  # Definir localidade para português do Brasil
+
+    def _carregar_negociacoes(self):
+        if os.path.exists(self.negociacoes_file):
+            try:
+                with open(self.negociacoes_file, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except json.JSONDecodeError:
+                return []
+        return []
+
+    def _salvar_negociacoes(self, negociacoes):
+        with open(self.negociacoes_file, 'w', encoding='utf-8') as f:
+            json.dump(negociacoes, f, ensure_ascii=False, indent=2)
+
+    def salvar_negociacao(self, params):
+        try:
+            negociacoes = self._carregar_negociacoes()
+            
+            nova_negociacao = {
+                "id": str(uuid.uuid4()),
+                "numero_cliente": params.get("numero_cliente"),
+                "nome_cliente": params.get("nome_cliente"),
+                "observacoes": params.get("observacoes", ""),
+                "data_negociacao": params.get("data_negociacao"),
+                "status": "Pendente",  # Status inicial sempre será Pendente
+                "valor_total": 0.0,
+                "detalhes": {}
+            }
+            
+            negociacoes.append(nova_negociacao)
+            self._salvar_negociacoes(negociacoes)
+            
+            return {"success": True, "message": "Negociação salva com sucesso"}
+        except Exception as e:
+            return {"success": False, "message": f"Erro ao salvar negociação: {str(e)}"}
+
+    def salvar_negociacao_atual(self, params):
+        try:
+            if not self.current_negotiation_details:
+                return {"success": False, "message": "Nenhuma negociação calculada para salvar"}
+            
+            negociacoes = self._carregar_negociacoes()
+            
+            # Determinar o status inicial baseado no tipo de pagamento
+            status_inicial = "Em Andamento" if self.current_negotiation_details.get("parcelas_info") else "Pendente"
+            
+            # Adicionar informações de parcelamento ao detalhes
+            if self.current_negotiation_details.get("parcelas_info"):
+                self.current_negotiation_details["frequencia_pagamento"] = params.get("frequencia_pagamento")
+                self.current_negotiation_details["tipo_calculo_parcela"] = params.get("tipo_calculo_parcela")
+                self.current_negotiation_details["valor_cada_parcela"] = self.current_negotiation_details.get("valor_cada_parcela", 0)
+                self.current_negotiation_details["num_parcelas"] = len(self.current_negotiation_details.get("parcelas_info", []))
+            
+            nova_negociacao = {
+                "id": str(uuid.uuid4()),
+                "numero_cliente": params.get("numero_cliente"),
+                "nome_cliente": params.get("nome_cliente"),
+                "observacoes": params.get("observacoes", ""),
+                "data_negociacao": params.get("data_negociacao"),
+                "status": status_inicial,
+                "valor_total": self.current_negotiation_details.get("saldo_base", 0.0),
+                "detalhes": self.current_negotiation_details
+            }
+            
+            negociacoes.append(nova_negociacao)
+            self._salvar_negociacoes(negociacoes)
+            
+            return {"success": True, "message": "Negociação atual salva com sucesso"}
+        except Exception as e:
+            return {"success": False, "message": f"Erro ao salvar negociação atual: {str(e)}"}
+
+    def listar_negociacoes(self):
+        try:
+            negociacoes = self._carregar_negociacoes()
+            return {"success": True, "negociacoes": negociacoes}
+        except Exception as e:
+            return {"success": False, "message": f"Erro ao listar negociações: {str(e)}"}
+
+    def obter_negociacao(self, id):
+        try:
+            negociacoes = self._carregar_negociacoes()
+            negociacao = next((n for n in negociacoes if n["id"] == id), None)
+            
+            if negociacao:
+                return {"success": True, "negociacao": negociacao}
+            else:
+                return {"success": False, "message": "Negociação não encontrada"}
+        except Exception as e:
+            return {"success": False, "message": f"Erro ao obter negociação: {str(e)}"}
+
+    def excluir_negociacao(self, id):
+        try:
+            negociacoes = self._carregar_negociacoes()
+            negociacoes = [n for n in negociacoes if n["id"] != id]
+            self._salvar_negociacoes(negociacoes)
+            return {"success": True, "message": "Negociação excluída com sucesso"}
+        except Exception as e:
+            return {"success": False, "message": f"Erro ao excluir negociação: {str(e)}"}
 
     def get_float(self, value, default_value=0.0):
         try:
@@ -141,7 +242,7 @@ class CalculadoraAPI:
         if not data_primeiro_pag:
             return {"juros_parcelamento": 0, "valor_total_parcelado": saldo_base, "num_parcelas": 1, "valor_cada_parcela": saldo_base, "parcelas_info": [{"numero": 1, "data": self.date_to_str(datetime.now().date()), "valor": saldo_base}]}
 
-        frequencia = params.get("frequencia_pagamento", "Quinzenal")
+        frequencia = params.get("frequencia_pagamento")
         tipo_calculo = params.get("tipo_calculo_parcela", "por_valor")
         taxa_dia_decimal = self.get_float(
             params.get("taxa_encargos_dia", "0.40")) / 100.0
@@ -230,7 +331,9 @@ class CalculadoraAPI:
             "valor_total_parcelado": valor_total_parcelado,
             "num_parcelas": num_parcelas,
             "valor_cada_parcela": valor_cada_parcela,
-            "parcelas_info": parcelas_info
+            "parcelas_info": parcelas_info,
+            "frequencia_pagamento": frequencia,
+            "tipo_calculo_parcela": tipo_calculo
         }
 
     def _gerar_datas_parcelas(self, data_inicio, num_parcelas, frequencia):
@@ -332,6 +435,93 @@ class CalculadoraAPI:
                     f"Valor total para pagamento a vista: R$ {newvalor}")
 
         return {"success": True, "texto": "\n".join(texto_final)}
+
+    def buscar_negociacao(self, termo_busca):
+        try:
+            negociacoes = self._carregar_negociacoes()
+            termo_busca = termo_busca.lower()
+            
+            # Buscar por número do cliente ou nome
+            negociacoes_filtradas = [
+                n for n in negociacoes
+                if termo_busca in str(n["numero_cliente"]).lower() or
+                termo_busca in str(n["nome_cliente"]).lower()
+            ]
+            
+            return {"success": True, "negociacoes": negociacoes_filtradas}
+        except Exception as e:
+            return {"success": False, "message": f"Erro ao buscar negociação: {str(e)}"}
+
+    def marcar_parcela_paga(self, id_negociacao, numero_parcela, pago):
+        try:
+            negociacoes = self._carregar_negociacoes()
+            negociacao = next((n for n in negociacoes if n["id"] == id_negociacao), None)
+            
+            if not negociacao:
+                return {"success": False, "message": "Negociação não encontrada"}
+            
+            if "detalhes" in negociacao and "parcelas_info" in negociacao["detalhes"]:
+                for parcela in negociacao["detalhes"]["parcelas_info"]:
+                    if parcela["numero"] == numero_parcela:
+                        parcela["pago"] = pago
+                        break
+                
+                self._salvar_negociacoes(negociacoes)
+                return {"success": True, "message": "Status da parcela atualizado com sucesso"}
+            else:
+                return {"success": False, "message": "Negociação não possui parcelas"}
+        except Exception as e:
+            return {"success": False, "message": f"Erro ao atualizar status da parcela: {str(e)}"}
+
+    def atualizar_negociacao(self, id_negociacao, params):
+        try:
+            negociacoes = self._carregar_negociacoes()
+            negociacao = next((n for n in negociacoes if n["id"] == id_negociacao), None)
+            
+            if not negociacao:
+                return {"success": False, "message": "Negociação não encontrada"}
+            
+            # Atualizar campos básicos
+            negociacao["numero_cliente"] = params.get("numero_cliente")
+            negociacao["nome_cliente"] = params.get("nome_cliente")
+            negociacao["observacoes"] = params.get("observacoes", "")
+            negociacao["status"] = params.get("status", "Pendente")
+            
+            self._salvar_negociacoes(negociacoes)
+            return {"success": True, "message": "Negociação atualizada com sucesso"}
+        except Exception as e:
+            return {"success": False, "message": f"Erro ao atualizar negociação: {str(e)}"}
+
+    def atualizar_status_negociacao(self, id_negociacao, novo_status):
+        """Atualiza o status de uma negociação."""
+        try:
+            negociacoes = self._carregar_negociacoes()
+            for negociacao in negociacoes:
+                if negociacao['id'] == id_negociacao:
+                    # Validar o novo status
+                    if novo_status not in ["Pendente", "Em Andamento", "Pago"]:
+                        return {'success': False, 'message': 'Status inválido'}
+                    
+                    negociacao['status'] = novo_status
+                    self._salvar_negociacoes(negociacoes)
+                    return {'success': True, 'message': 'Status atualizado com sucesso'}
+            return {'success': False, 'message': 'Negociação não encontrada'}
+        except Exception as e:
+            return {'success': False, 'message': f'Erro ao atualizar status: {str(e)}'}
+
+    def verificar_status_parcelas(self, id_negociacao):
+        """Verifica se todas as parcelas de uma negociação foram pagas."""
+        try:
+            negociacoes = self._carregar_negociacoes()
+            for negociacao in negociacoes:
+                if negociacao['id'] == id_negociacao:
+                    if 'detalhes' in negociacao and 'parcelas_info' in negociacao['detalhes']:
+                        todas_pagas = all(parcela.get('pago', False) for parcela in negociacao['detalhes']['parcelas_info'])
+                        return {'success': True, 'todas_pagas': todas_pagas}
+                    return {'success': False, 'message': 'Negociação não possui parcelas'}
+            return {'success': False, 'message': 'Negociação não encontrada'}
+        except Exception as e:
+            return {'success': False, 'message': f'Erro ao verificar status das parcelas: {str(e)}'}
 
 
 def create_app():

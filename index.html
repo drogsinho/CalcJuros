@@ -71,138 +71,217 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Coluna Esquerda - Formulários de Input -->
             <div class="lg:col-span-2 space-y-6">
-                <!-- Adicionar Notas Fiscais -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 fade-in">
-                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Adicionar Notas Fiscais</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Número NF</label>
-                            <input type="text" id="numNF" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vencimento</label>
-                            <input type="text" id="vencimentoNF" placeholder="DD/MM/AAAA" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor Original (R$)</label>
-                            <input type="number" step="0.01" id="valorNF" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
-                        </div>
+                <!-- Tabs de Navegação -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 fade-in">
+                    <div class="flex space-x-4 border-b border-gray-200 dark:border-gray-700">
+                        <button onclick="showTab('calculadora')" id="tabCalculadora" class="px-4 py-2 text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-400 font-medium">
+                            Calculadora
+                        </button>
+                        <button onclick="showTab('negociacoes')" id="tabNegociacoes" class="px-4 py-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium">
+                            Negociações
+                        </button>
                     </div>
-                    <button onclick="adicionarNF()" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md transition-colors font-medium">
-                        <span class="mr-2">+</span>Adicionar NF
-                    </button>
                 </div>
 
-                <!-- Tabela de Notas Fiscais -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 fade-in">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Notas Fiscais Adicionadas</h3>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full table-auto">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
-                                <tr>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Nº NF</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Valor Orig.</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Vencimento</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Dias Atraso</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Juros Mora</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Multa</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Valor Atual.</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="nfsTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                <!-- Linhas da tabela serão populadas pelo JavaScript -->
-                            </tbody>
-                        </table>
-                     </div>
-                     <br>
-                     <div class="flex justify-end">
-                        <p class="text-sm text-gray-500 dark:text-gray-300">
-                            <button onclick="removerTodasNFs()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-colors font-small ml-2">
-                                <span class="mr-2">Remover Todas as NFs</span>
+                <!-- Conteúdo da Calculadora -->
+                <div id="conteudoCalculadora" class="space-y-6">
+                    <!-- Adicionar Notas Fiscais -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 fade-in">
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Adicionar Notas Fiscais</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Número NF</label>
+                                <input type="text" id="numNF" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vencimento</label>
+                                <input type="text" id="vencimentoNF" placeholder="DD/MM/AAAA" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor Original (R$)</label>
+                                <input type="number" step="0.01" id="valorNF" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
+                            </div>
+                        </div>
+                        <button onclick="adicionarNF()" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md transition-colors font-medium">
+                            <span class="mr-2">+</span>Adicionar NF
+                        </button>
+                    </div>
+
+                    <!-- Tabela de Notas Fiscais -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 fade-in">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Notas Fiscais Adicionadas</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full table-auto">
+                                <thead class="bg-gray-50 dark:bg-gray-700">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Nº NF</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Valor Orig.</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Vencimento</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Dias Atraso</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Juros Mora</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Multa</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Valor Atual.</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="nfsTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    <!-- Linhas da tabela serão populadas pelo JavaScript -->
+                                </tbody>
+                            </table>
+                         </div>
+                         <br>
+                         <div class="flex justify-end">
+                            <p class="text-sm text-gray-500 dark:text-gray-300">
+                                <button onclick="removerTodasNFs()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-colors font-small ml-2">
+                                    <span class="mr-2">Remover Todas as NFs</span>
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Parâmetros da Negociação -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 fade-in">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Parâmetros da Negociação</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Data Base Encargos</label>
+                                <input type="text" id="dataBaseEncargos" placeholder="DD/MM/AAAA" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Taxa Encargos (% ao dia)</label>
+                                <input type="number" step="0.01" id="taxaEncargos" value="0.40" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">% Desconto sobre Juros Mora</label>
+                                <input type="number" step="0.01" id="descontoJuros" value="0" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
+                            </div>
+                            <div class="flex items-center mt-6">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="aplicarMulta" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
+                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Aplicar Multa Contratual (2.014%)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Condições de Pagamento -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 fade-in">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Condições de Pagamento</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Forma de Pagamento</label>
+                                <select id="formaPagamento" onchange="toggleParcelamento()" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
+                                    <option value="avista">À Vista</option>
+                                    <option value="parcelado">Parcelado</option>
+                                </select>
+                            </div>
+                            <div id="dataPrimeiroPagamentoDiv">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Data do 1º Pagamento</label>
+                                <input type="text" id="dataPrimeiroPagamento" placeholder="DD/MM/AAAA" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
+                            </div>
+                        </div>
+                        
+                        <div id="parcelamentoOptions" class="hidden space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Frequência</label>
+                                    <select id="frequenciaPagamento" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
+                                        <option value="Semanal">Semanal</option>
+                                        <option value="Quinzenal" selected>Quinzenal</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Calcular por</label>
+                                    <select id="tipoCalculoParcela" onchange="toggleTipoCalculo()" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
+                                        <option value="por_valor">Valor da Parcela</option>
+                                        <option value="por_numero">Número de Parcelas</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div id="valorParcelaDiv">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor Desejado da Parcela (R$)</label>
+                                    <input type="number" step="0.01" id="valorParcela" value="100" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
+                                </div>
+                                <div id="numeroParcelasDiv" class="hidden">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Número de Parcelas</label>
+                                    <input type="number" id="numeroParcelas" value="3" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 flex space-x-4">
+                            <button onclick="calcularNegociacao()" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-md transition-colors font-medium flex-1">
+                                Calcular Negociação
                             </button>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Parâmetros da Negociação -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 fade-in">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Parâmetros da Negociação</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Data Base Encargos</label>
-                            <input type="text" id="dataBaseEncargos" placeholder="DD/MM/AAAA" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Taxa Encargos (% ao dia)</label>
-                            <input type="number" step="0.01" id="taxaEncargos" value="0.40" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">% Desconto sobre Juros Mora</label>
-                            <input type="number" step="0.01" id="descontoJuros" value="0" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
-                        </div>
-                        <div class="flex items-center mt-6">
-                            <input type="checkbox" id="aplicarMulta" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded" checked>
-                            <label for="aplicarMulta" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">Aplicar Multa Contratual (2.014%)</label>
+                            <button onclick="gerarTexto()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md transition-colors font-medium">
+                                Gerar Texto
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Condições de Pagamento -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 fade-in">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Condições de Pagamento</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Forma de Pagamento</label>
-                            <select id="formaPagamento" onchange="toggleParcelamento()" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
-                                <option value="avista">À Vista</option>
-                                <option value="parcelado">Parcelado</option>
-                            </select>
-                        </div>
-                        <div id="dataPrimeiroPagamentoDiv">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Data do 1º Pagamento</label>
-                            <input type="text" id="dataPrimeiroPagamento" placeholder="DD/MM/AAAA" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
-                        </div>
-                    </div>
-                    
-                    <div id="parcelamentoOptions" class="hidden space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Conteúdo das Negociações -->
+                <div id="conteudoNegociacoes" class="space-y-6 hidden">
+                    <!-- Formulário de Nova Negociação -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 fade-in">
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Nova Negociação</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Frequência</label>
-                                <select id="frequenciaPagamento" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
-                                    <option value="Semanal">Semanal</option>
-                                    <option value="Quinzenal" selected>Quinzenal</option>
-                                </select>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Número do Cliente</label>
+                                <input type="text" id="numeroCliente" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Calcular por</label>
-                                <select id="tipoCalculoParcela" onchange="toggleTipoCalculo()" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
-                                    <option value="por_valor">Valor da Parcela</option>
-                                    <option value="por_numero">Número de Parcelas</option>
-                                </select>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nome do Cliente</label>
+                                <input type="text" id="nomeCliente" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div id="valorParcelaDiv">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor Desejado da Parcela (R$)</label>
-                                <input type="number" step="0.01" id="valorParcela" value="100" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
+                        <div class="grid grid-cols-1 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Observações</label>
+                                <textarea id="observacoesNegociacao" rows="3" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"></textarea>
                             </div>
-                            <div id="numeroParcelasDiv" class="hidden">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Número de Parcelas</label>
-                                <input type="number" id="numeroParcelas" value="3" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
-                            </div>
+                        </div>
+                        <div class="flex space-x-4">
+                            <button onclick="salvarNegociacao()" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-md transition-colors font-medium flex-1">
+                                Salvar Negociação
+                            </button>
+                            <button onclick="salvarNegociacaoAtual()" id="btnSalvarAtual" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md transition-colors font-medium hidden">
+                                Salvar Negociação Atual
+                            </button>
                         </div>
                     </div>
-                    
-                    <div class="mt-6 flex space-x-4">
-                        <button onclick="calcularNegociacao()" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-md transition-colors font-medium flex-1">
-                            Calcular Negociação
-                        </button>
-                        <button onclick="gerarTexto()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md transition-colors font-medium">
-                            Gerar Texto
-                        </button>
+
+                    <!-- Lista de Negociações -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 fade-in">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Negociações Salvas</h3>
+                            <div class="flex space-x-2">
+                                <input type="text" id="searchNegociacao" placeholder="Buscar por código do cliente..." class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all">
+                                <button onclick="buscarNegociacao()" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md transition-colors">
+                                    Buscar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full table-auto">
+                                <thead class="bg-gray-50 dark:bg-gray-700">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Cliente</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Data</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Valor Total</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="negociacoesTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    <!-- Linhas da tabela serão populadas pelo JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -281,6 +360,103 @@
                     </button>
                     <button onclick="fecharModal()" class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md transition-colors">
                         Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Visualização de Negociação -->
+        <div id="viewNegociacaoModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Detalhes da Negociação</h3>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Status:</span>
+                        <select id="viewStatusSelect" onchange="atualizarStatusNegociacao()" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-1 text-sm">
+                            <option value="Pendente">Pendente</option>
+                            <option value="Em Andamento">Em Andamento</option>
+                            <option value="Pago">Pago</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="p-6 overflow-y-auto max-h-[60vh] space-y-6">
+                    <!-- Informações Básicas -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Cliente:</p>
+                            <p id="viewCliente" class="font-medium text-gray-900 dark:text-white"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Data:</p>
+                            <p id="viewData" class="font-medium text-gray-900 dark:text-white"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Valor Total:</p>
+                            <p id="viewValorTotal" class="font-medium text-gray-900 dark:text-white"></p>
+                        </div>
+                    </div>
+
+                    <!-- Observações -->
+                    <div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Observações:</p>
+                        <p id="viewObservacoes" class="text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 p-3 rounded"></p>
+                    </div>
+
+                    <!-- Notas Fiscais -->
+                    <div id="viewNfs" class="space-y-2"></div>
+
+                    <!-- Parcelas -->
+                    <div id="viewParcelas" class="hidden space-y-2">
+                        <div id="viewParcelasList" class="space-y-2"></div>
+                    </div>
+                </div>
+                <div class="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+                    <button onclick="fecharModalNegociacao()" class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md transition-colors">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Edição de Negociação -->
+        <div id="editNegociacaoModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Editar Negociação</h3>
+                </div>
+                <div class="p-6 overflow-y-auto max-h-[60vh]">
+                    <form id="editNegociacaoForm" class="space-y-4">
+                        <input type="hidden" id="editNegociacaoId">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Número do Cliente</label>
+                                <input type="text" id="editNumeroCliente" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nome do Cliente</label>
+                                <input type="text" id="editNomeCliente" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Observações</label>
+                            <textarea id="editObservacoes" rows="3" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                            <select id="editStatus" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md px-3 py-2">
+                                <option value="Pendente">Pendente</option>
+                                <option value="Aprovada">Aprovada</option>
+                                <option value="Rejeitada">Rejeitada</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
+                    <button onclick="salvarEdicaoNegociacao()" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md transition-colors">
+                        Salvar
+                    </button>
+                    <button onclick="fecharModalEdicaoNegociacao()" class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md transition-colors">
+                        Cancelar
                     </button>
                 </div>
             </div>
